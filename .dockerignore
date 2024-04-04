@@ -1,0 +1,8 @@
+build/
+tmp/
+
+compose.*.yml
+compose.yml
+
+Dockerfile.*
+Dockerfile

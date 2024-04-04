@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:16.2-alpine3.19
+    environment:
+      POSTGRES_DB: test
+      POSTGRES_USER: test-user
+      POSTGRES_PASSWORD: test-password
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      start_period: 5s
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  db-migration:
+    build:
+      context: .
+      dockerfile: Dockerfile.db-migration
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      GOOSE_DBSTRING: "host=db port=5432 user=test-user password=test-password dbname=test sslmode=disable"
+
+volumes:
+  db-data:
